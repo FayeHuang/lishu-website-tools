@@ -92,6 +92,23 @@
     a:hover { text-decoration:underline; }
     .copy-inline { background:transparent; border:1px solid var(--color-border); color: var(--color-text-light); font-size:.62rem; padding:4px 8px; border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; gap:4px; }
     .copy-inline:hover { color: var(--color-text); }
+    .lookup-form { gap: 1.25rem; }
+    .lookup-intro { display:grid; gap:.45rem; }
+    .lookup-title { margin:0; font-size:1.08rem; }
+    .lookup-copy { margin:0; color: var(--color-text-light); font-size:.9rem; line-height:1.6; }
+    .primary-upload { padding:1rem 0 1.1rem; border-bottom:1px solid var(--color-border); }
+    .primary-upload label { margin-bottom:8px; }
+    .upload-row { display:flex; flex-wrap:wrap; gap:.75rem; align-items:center; }
+    input[type=file] { width:100%; max-width:100%; font-size:.92rem; color: var(--color-text-light); }
+    input[type=file]::file-selector-button { margin-right:.75rem; border:1px solid var(--color-primary); background: var(--color-primary); color: #fff; border-radius: var(--radius-md); padding:11px 16px; cursor:pointer; transition: var(--transition); font-weight:600; }
+    input[type=file]::file-selector-button:hover { border-color: var(--color-border-strong); }
+    .upload-help { margin:.45rem 0 0; color: var(--color-text-light); font-size:.82rem; }
+    .upload-status { min-height:1.25rem; margin-top:.4rem; font-size:.8rem; color: var(--color-text-light); }
+    .manual-section { display:grid; gap:.7rem; padding-top:.1rem; }
+    .manual-header { display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap; }
+    .manual-title { margin:0; font-size:.95rem; font-weight:600; }
+    .manual-note { color: var(--color-text-light); font-size:.78rem; }
+    .manual-actions { color: var(--color-text-light); font-size:.8rem; }
     mark { background: #ffe79b; color:#000; padding:0 2px; border-radius:3px; }
     .dark mark { background:#b7861e; color:#fff; }
     .toast { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); background:#222; color:#fff; padding:10px 16px; font-size:.75rem; border-radius:999px; box-shadow:0 4px 18px -2px rgba(0,0,0,.55); opacity:0; pointer-events:none; transition:.35s cubic-bezier(.4,.2,.3,1); letter-spacing:.5px; }
@@ -129,15 +146,32 @@
   <main class="layout fullscreen" id="appRoot">
     <section class="panel" aria-labelledby="lookupHeading">
       <h2 id="lookupHeading" style="margin-top:0;font-size:1.2rem;display:flex;align-items:center;gap:.5rem;">✨ 新站網址查詢</h2>
-      <form id="lookupForm" onsubmit="return false" autocomplete="off">
-        <div>
-          <label for="oldUrl" style="margin-bottom:16px;">貼上舊的 Typepad 網址：</label>
-          <div class="field-row" style="margin-bottom:16px;">
-            <input id="oldUrl"  type="url" placeholder="https://lishu.typepad.com/..." inputmode="url" spellcheck="false" aria-describedby="urlHelp" />
+      <form id="lookupForm" class="lookup-form" onsubmit="return false" autocomplete="off">
+        <div class="lookup-intro">
+          <h3 class="lookup-title" id="qrPrimaryTitle">先上傳 QR Code 圖片</h3>
+          <p class="lookup-copy">選一張含舊站網址的 QR Code 圖片，系統會自動解析並直接顯示新站網址。</p>
+        </div>
+
+        <div class="primary-upload" aria-labelledby="qrPrimaryTitle">
+          <label for="qrUpload">選擇 QR Code 圖片</label>
+          <div class="upload-row">
+            <input id="qrUpload" type="file" accept="image/*" aria-describedby="qrHelp qrStatus" />
+          </div>
+          <p class="upload-help" id="qrHelp">支援手機截圖、相簿圖片或掃碼截圖。選取後會立即解析，不需要再按查詢。</p>
+          <div class="upload-status" id="qrStatus" aria-live="polite"></div>
+        </div>
+
+        <div class="manual-section" aria-labelledby="manualLookupTitle">
+          <div class="manual-header">
+            <h3 class="manual-title" id="manualLookupTitle">沒有 QR 圖片時，再手動貼上舊站網址</h3>
+            <div class="manual-note">備用方式</div>
+          </div>
+          <div class="field-row">
+            <input id="oldUrl" type="url" placeholder="https://lishu.typepad.com/..." inputmode="url" spellcheck="false" aria-describedby="urlHelp" />
             <button id="findBtn" type="button" aria-label="查詢新網址">查詢</button>
             <button class="outline" id="clearBtn" type="button" aria-label="清空輸入">清空</button>
           </div>
-          
+          <div class="manual-actions" id="urlHelp">貼上完整舊站網址後查詢；若 QR 已成功解析，這裡也會自動帶入內容。</div>
         </div>
       </form>
       <div class="result-area" id="resultArea" aria-live="polite"></div>
@@ -152,6 +186,7 @@
   </main>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <script>
     // 舊網址 → 新網址 對照表
     const urlMap = {
@@ -30091,6 +30126,8 @@
 
     const el = {
       input: document.getElementById('oldUrl'),
+      qrUpload: document.getElementById('qrUpload'),
+      qrStatus: document.getElementById('qrStatus'),
       findBtn: document.getElementById('findBtn'),
       clearBtn: document.getElementById('clearBtn'),
       resultArea: document.getElementById('resultArea'),
@@ -30111,12 +30148,79 @@
     const debounce = (fn, ms=260) => { let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms);} };
     const truncate = (str, len=68) => str.length > len ? str.slice(0,len-8)+'…'+str.slice(-6) : str;
     // const escapeHTML = (str='') => str.replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+    const urlPattern = /https?:\/\/\S+/i;
    
     function toast(msg, ms=2500){
       const t = el.toast; t.textContent = msg; t.classList.add('show');
       setTimeout(()=> t.classList.remove('show'), ms);
     }
     function copy(text){ navigator.clipboard.writeText(text).then(()=>toast('已複製')).catch(()=>toast('複製失敗')); }
+    function setQrStatus(message, isError=false){
+      el.qrStatus.textContent = message;
+      el.qrStatus.style.color = isError ? 'var(--color-danger)' : 'var(--color-text-light)';
+    }
+    function normalizeLookupInput(value){
+      const trimmed = String(value || '').trim();
+      if(!trimmed) return '';
+      const matchedUrl = trimmed.match(urlPattern);
+      return matchedUrl ? matchedUrl[0].trim() : trimmed;
+    }
+    async function loadImageBitmap(file){
+      if('createImageBitmap' in window){
+        return createImageBitmap(file);
+      }
+      const image = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      try {
+        await new Promise((resolve, reject)=>{
+          image.onload = resolve;
+          image.onerror = reject;
+          image.src = objectUrl;
+        });
+        return image;
+      } finally {
+        URL.revokeObjectURL(objectUrl);
+      }
+    }
+    async function decodeQrFromFile(file){
+      if(!file){
+        throw new Error('請先選擇一張 QR Code 圖片。');
+      }
+
+      const bitmap = await loadImageBitmap(file);
+      const canvas = document.createElement('canvas');
+      const width = bitmap.width || bitmap.naturalWidth;
+      const height = bitmap.height || bitmap.naturalHeight;
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(bitmap, 0, 0, width, height);
+
+      if('BarcodeDetector' in window){
+        try {
+          const detector = new BarcodeDetector({ formats: ['qr_code'] });
+          const codes = await detector.detect(canvas);
+          if(codes.length && codes[0].rawValue){
+            return codes[0].rawValue;
+          }
+        } catch (_) {
+          // Fallback to jsQR below.
+        }
+      }
+
+      if(typeof jsQR !== 'function'){
+        throw new Error('QR 解析器尚未載入，請稍後再試。');
+      }
+
+      const imageData = ctx.getImageData(0, 0, width, height);
+      const decoded = jsQR(imageData.data, width, height, { inversionAttempts: 'attemptBoth' });
+      if(!decoded || !decoded.data){
+        throw new Error('無法辨識這張圖片中的 QR Code。');
+      }
+
+      return decoded.data;
+    }
 
     // ===== Data Flatten =====
     function buildData(){
@@ -30132,7 +30236,7 @@
     // ===== Core Lookup =====
     function lookupExact(url){ return urlMap[url]; }
     function showResult(url){
-      const val = url.trim();
+      const val = normalizeLookupInput(url);
       if(!val){ el.resultArea.innerHTML = '<div class="empty">請輸入舊網址</div>'; return; }
       const result = lookupExact(val);
       if(!result){
@@ -30159,11 +30263,40 @@
     // ===== Events =====
     el.findBtn.addEventListener('click', ()=> showResult(el.input.value));
     el.input.addEventListener('keydown', e=>{ if(e.key==='Enter'){ showResult(el.input.value); } });
-    el.clearBtn.addEventListener('click', ()=>{ el.input.value=''; el.resultArea.innerHTML='<div class="empty">已清空，請重新輸入</div>'; });
+    el.clearBtn.addEventListener('click', ()=>{
+      el.input.value='';
+      el.qrUpload.value='';
+      setQrStatus('');
+      el.resultArea.innerHTML='<div class="empty">已清空，請重新輸入</div>';
+    });
+    el.qrUpload.addEventListener('change', async e=>{
+      const file = e.target.files && e.target.files[0];
+      if(!file){
+        setQrStatus('');
+        return;
+      }
+
+      setQrStatus('正在解析 QR Code...');
+
+      try {
+        const decodedValue = await decodeQrFromFile(file);
+        const normalizedUrl = normalizeLookupInput(decodedValue);
+        el.input.value = normalizedUrl;
+        setQrStatus(`已解析出舊網址：${truncate(normalizedUrl, 80)}`);
+        showResult(normalizedUrl);
+      } catch (error) {
+        setQrStatus(error.message || 'QR Code 解析失敗。', true);
+        el.resultArea.innerHTML = '<div class="empty">圖片解析失敗，請確認 QR Code 內容是舊站網址。</div>';
+      }
+    });
    
     // Paste auto-trim & immediate lookup if exact match
     el.input.addEventListener('paste', e=>{
-      setTimeout(()=>{ const v = el.input.value.trim(); el.input.value = v; if(urlMap[v]) showResult(v); }, 0);
+      setTimeout(()=>{
+        const v = normalizeLookupInput(el.input.value);
+        el.input.value = v;
+        if(urlMap[v]) showResult(v);
+      }, 0);
     });
 
     // ===== Initialization =====
