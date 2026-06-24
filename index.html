@@ -30448,21 +30448,27 @@
     }
 
     // ===== Events =====
-    el.findBtn.addEventListener('click', ()=> showResult(el.input.value));
-    el.input.addEventListener('keydown', e=>{ if(e.key==='Enter'){ showResult(el.input.value); } });
+    if(el.findBtn && el.input){
+      el.findBtn.addEventListener('click', ()=> showResult(el.input.value));
+      el.input.addEventListener('keydown', e=>{ if(e.key==='Enter'){ showResult(el.input.value); } });
+    }
     el.closeResultDialog.addEventListener('click', closeResultDialog);
     el.resultDialog.addEventListener('click', e=>{
       if(e.target === el.resultDialog){
         closeResultDialog();
       }
     });
-    el.clearBtn.addEventListener('click', ()=>{
-      closeResultDialog();
-      el.input.value='';
-      el.qrUpload.value='';
-      setQrStatus('');
-      el.resultArea.innerHTML='';
-    });
+    if(el.clearBtn){
+      el.clearBtn.addEventListener('click', ()=>{
+        closeResultDialog();
+        if(el.input){
+          el.input.value='';
+        }
+        el.qrUpload.value='';
+        setQrStatus('');
+        el.resultArea.innerHTML='';
+      });
+    }
     el.qrUpload.addEventListener('change', async e=>{
       const file = e.target.files && e.target.files[0];
       if(!file){
@@ -30485,13 +30491,15 @@
     });
    
     // Paste auto-trim & immediate lookup if exact match
-    el.input.addEventListener('paste', e=>{
-      setTimeout(()=>{
-        const v = normalizeLookupInput(el.input.value);
-        el.input.value = v;
-        if(urlMap[v]) showResult(v);
-      }, 0);
-    });
+    if(el.input){
+      el.input.addEventListener('paste', e=>{
+        setTimeout(()=>{
+          const v = normalizeLookupInput(el.input.value);
+          el.input.value = v;
+          if(urlMap[v]) showResult(v);
+        }, 0);
+      });
+    }
 
     // ===== Initialization =====
     buildData();
