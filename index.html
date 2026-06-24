@@ -67,6 +67,58 @@
     .meta { font-size:1rem; color: var(--color-text-light); display:flex; flex-wrap:wrap; gap:.10rem; align-items:center; }
     .mono { font-family: var(--mono-font); font-size:.78rem; word-break:break-all; }
     .empty { padding:.8rem 1rem; border:1px dashed var(--color-border); color: var(--color-text-light); border-radius: var(--radius-md); font-size:.85rem; text-align:center; }
+    .result-hint { margin-top:.35rem; color: var(--color-text-light); font-size:.82rem; line-height:1.6; }
+    dialog.result-dialog {
+      width:min(680px, calc(100vw - 2rem));
+      border:none;
+      border-radius: 20px;
+      padding:0;
+      background: transparent;
+      box-shadow:none;
+    }
+    dialog.result-dialog::backdrop { background: rgba(15, 23, 42, .42); backdrop-filter: blur(4px); }
+    .result-dialog-card {
+      background: var(--color-bg-alt);
+      border:1px solid var(--color-border);
+      border-radius: 20px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, .2);
+      padding: 1.35rem 1.35rem 1.15rem;
+      display:grid;
+      gap:1rem;
+    }
+    .dark .result-dialog-card { box-shadow: 0 24px 60px rgba(0,0,0,.45); }
+    .dialog-topbar { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; }
+    .dialog-eyebrow { margin:0 0 .4rem; color: var(--color-primary); font-size:.78rem; font-weight:700; letter-spacing:.08em; }
+    .dialog-title { margin:0; font-size:1.28rem; line-height:1.45; }
+    .dialog-close {
+      --btn-bg: transparent;
+      --btn-color: var(--color-text-light);
+      --btn-border: var(--color-border);
+      width:40px;
+      height:40px;
+      padding:0;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:1.35rem;
+      line-height:1;
+      border-radius:999px;
+      flex:0 0 auto;
+      align-self:flex-start;
+    }
+    .dialog-close:hover { --btn-color: var(--color-text); }
+    .dialog-meta {
+      display:grid;
+      gap:.85rem;
+      padding:.95rem 1rem;
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--color-bg) 72%, var(--color-primary) 3%);
+      border:1px solid color-mix(in srgb, var(--color-border) 82%, var(--color-primary) 10%);
+    }
+    .dialog-field { display:grid; gap:.3rem; }
+    .dialog-label { font-size:.77rem; color: var(--color-text-light); letter-spacing:.04em; }
+    .dialog-value { font-size:1rem; line-height:1.65; word-break:break-word; }
+    .dialog-actions { display:flex; gap:.65rem; flex-wrap:wrap; }
     .quick-cats { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.4rem; }
     .quick-cats button { --btn-bg: var(--color-bg-alt); --btn-color: var(--color-text-light); --btn-border: var(--color-border); font-size:.65rem; padding:5px 10px; font-weight:500; box-shadow:none; }
     .quick-cats button:hover { color: var(--color-text); }
@@ -94,16 +146,26 @@
     .copy-inline:hover { color: var(--color-text); }
     .lookup-form { gap: 1.25rem; }
     .lookup-intro { display:grid; gap:.45rem; }
-    .lookup-title { margin:0; font-size:1.08rem; }
-    .lookup-copy { margin:0; color: var(--color-text-light); font-size:.9rem; line-height:1.6; }
-    .primary-upload { padding:1rem 0 1.1rem; border-bottom:1px solid var(--color-border); }
-    .primary-upload label { margin-bottom:8px; }
-    .upload-row { display:flex; flex-wrap:wrap; gap:.75rem; align-items:center; }
+    .lookup-title { margin:0; font-size:1.08rem; line-height:1.35; }
+    .lookup-copy { margin:0; color: var(--color-text-light); font-size:.9rem; line-height:1.75; }
+    .primary-upload { padding:1rem 0 1.35rem; border-bottom:1px solid var(--color-border); display:grid; gap:.8rem; }
+    .primary-upload label { margin-bottom:0; line-height:1.45; }
+    .upload-row { display:flex; flex-wrap:wrap; gap:.9rem; align-items:center; margin-top:.15rem; }
     input[type=file] { width:100%; max-width:100%; font-size:.92rem; color: var(--color-text-light); }
     input[type=file]::file-selector-button { margin-right:.75rem; border:1px solid var(--color-primary); background: var(--color-primary); color: #fff; border-radius: var(--radius-md); padding:11px 16px; cursor:pointer; transition: var(--transition); font-weight:600; }
     input[type=file]::file-selector-button:hover { border-color: var(--color-border-strong); }
-    .upload-help { margin:.45rem 0 0; color: var(--color-text-light); font-size:.82rem; }
-    .upload-status { min-height:1.25rem; margin-top:.4rem; font-size:.8rem; color: var(--color-text-light); }
+    .upload-help { margin:0; color: var(--color-text-light); font-size:.82rem; line-height:1.7; }
+    .upload-status { min-height:1.25rem; margin-top:.1rem; font-size:.8rem; color: var(--color-text-light); display:flex; align-items:center; gap:.45rem; line-height:1.6; }
+    .upload-status.is-busy::before {
+      content:'';
+      width:14px;
+      height:14px;
+      border-radius:999px;
+      border:2px solid color-mix(in srgb, var(--color-primary) 24%, transparent);
+      border-top-color: var(--color-primary);
+      animation: spin .85s linear infinite;
+      flex:0 0 auto;
+    }
     .manual-section { display:grid; gap:.7rem; padding-top:.1rem; }
     .manual-header { display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap; }
     .manual-title { margin:0; font-size:.95rem; font-weight:600; }
@@ -114,6 +176,7 @@
     .toast { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); background:#222; color:#fff; padding:10px 16px; font-size:.75rem; border-radius:999px; box-shadow:0 4px 18px -2px rgba(0,0,0,.55); opacity:0; pointer-events:none; transition:.35s cubic-bezier(.4,.2,.3,1); letter-spacing:.5px; }
     .toast.show { opacity:1; transform:translate(-50%,0); }
     .dark .toast { background:#f2f5f8; color:#1a1f24; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     @media (max-width:760px){
       .flex-cols { flex-direction:column; }
       header { padding-bottom: 4px; }
@@ -147,13 +210,9 @@
     <section class="panel" aria-labelledby="lookupHeading">
       <h2 id="lookupHeading" style="margin-top:0;font-size:1.2rem;display:flex;align-items:center;gap:.5rem;">✨ 新站網址查詢</h2>
       <form id="lookupForm" class="lookup-form" onsubmit="return false" autocomplete="off">
-        <div class="lookup-intro">
-          <h3 class="lookup-title" id="qrPrimaryTitle">先上傳 QR Code 圖片</h3>
-          <p class="lookup-copy">選一張含舊站網址的 QR Code 圖片，系統會自動解析並直接顯示新站網址。</p>
-        </div>
-
         <div class="primary-upload" aria-labelledby="qrPrimaryTitle">
-          <label for="qrUpload">選擇 QR Code 圖片</label>
+          <h3 class="lookup-title" id="qrPrimaryTitle">上傳 QR Code 圖片</h3>
+          <p class="lookup-copy">選一張含舊站網址的 QR Code 圖片，系統會自動解析並直接顯示新站網址。</p>
           <div class="upload-row">
             <input id="qrUpload" type="file" accept="image/*" aria-describedby="qrHelp qrStatus" />
           </div>
@@ -164,7 +223,6 @@
         <div class="manual-section" aria-labelledby="manualLookupTitle">
           <div class="manual-header">
             <h3 class="manual-title" id="manualLookupTitle">沒有 QR 圖片時，再手動貼上舊站網址</h3>
-            <div class="manual-note">備用方式</div>
           </div>
           <div class="field-row">
             <input id="oldUrl" type="url" placeholder="https://lishu.typepad.com/..." inputmode="url" spellcheck="false" aria-describedby="urlHelp" />
@@ -184,6 +242,31 @@
       <div>© <span id="yearNow"></span> 理書的網站，舊站連結轉換工具</div>
     </footer>
   </main>
+  <dialog class="result-dialog" id="resultDialog" aria-labelledby="resultDialogTitle">
+    <div class="result-dialog-card">
+      <div class="dialog-topbar">
+        <div>
+          <p class="dialog-eyebrow">查詢結果</p>
+          <h3 class="dialog-title" id="resultDialogTitle"></h3>
+        </div>
+        <button type="button" class="secondary dialog-close" id="closeResultDialog" aria-label="關閉結果視窗">×</button>
+      </div>
+      <div class="dialog-meta">
+        <div class="dialog-field">
+          <div class="dialog-label">分類</div>
+          <div class="dialog-value" id="resultDialogCategory"></div>
+        </div>
+        <div class="dialog-field">
+          <div class="dialog-label">新網址</div>
+          <div class="dialog-value mono" id="resultDialogUrl"></div>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" id="openResultLink">開啟新網址</button>
+        <button type="button" class="outline" id="copyResultLink">複製新網址</button>
+      </div>
+    </div>
+  </dialog>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
@@ -30128,6 +30211,13 @@
       input: document.getElementById('oldUrl'),
       qrUpload: document.getElementById('qrUpload'),
       qrStatus: document.getElementById('qrStatus'),
+      resultDialog: document.getElementById('resultDialog'),
+      resultDialogTitle: document.getElementById('resultDialogTitle'),
+      resultDialogCategory: document.getElementById('resultDialogCategory'),
+      resultDialogUrl: document.getElementById('resultDialogUrl'),
+      closeResultDialog: document.getElementById('closeResultDialog'),
+      openResultLink: document.getElementById('openResultLink'),
+      copyResultLink: document.getElementById('copyResultLink'),
       findBtn: document.getElementById('findBtn'),
       clearBtn: document.getElementById('clearBtn'),
       resultArea: document.getElementById('resultArea'),
@@ -30155,15 +30245,49 @@
       setTimeout(()=> t.classList.remove('show'), ms);
     }
     function copy(text){ navigator.clipboard.writeText(text).then(()=>toast('已複製')).catch(()=>toast('複製失敗')); }
-    function setQrStatus(message, isError=false){
+    function closeResultDialog(){
+      if(el.resultDialog.open){
+        el.resultDialog.close();
+      }
+    }
+    function setQrStatus(message, isError=false, isBusy=false){
       el.qrStatus.textContent = message;
       el.qrStatus.style.color = isError ? 'var(--color-danger)' : 'var(--color-text-light)';
+      el.qrStatus.classList.toggle('is-busy', Boolean(isBusy));
+    }
+    function showResultDialog(result, categoryUrl){
+      el.resultDialogTitle.textContent = result.title || '查詢結果';
+      el.resultDialogCategory.innerHTML = categoryUrl
+        ? `<a href="${categoryUrl}" target="_blank" rel="noopener">${result.category}</a>`
+        : (result.category || '未分類');
+      el.resultDialogUrl.innerHTML = `<a href="${result.newUrl}" target="_blank" rel="noopener">${result.newUrl}</a>`;
+      el.openResultLink.onclick = ()=> window.open(result.newUrl, '_blank');
+      el.copyResultLink.onclick = ()=> copy(result.newUrl);
+      if(typeof el.resultDialog.showModal === 'function'){
+        if(el.resultDialog.open){
+          el.resultDialog.close();
+        }
+        el.resultDialog.showModal();
+      } else {
+        el.resultDialog.setAttribute('open', 'open');
+      }
     }
     function normalizeLookupInput(value){
       const trimmed = String(value || '').trim();
       if(!trimmed) return '';
       const matchedUrl = trimmed.match(urlPattern);
       return matchedUrl ? matchedUrl[0].trim() : trimmed;
+    }
+    function getFittedSize(width, height, maxSide=1800){
+      const longestSide = Math.max(width, height);
+      if(longestSide <= maxSide){
+        return { width, height };
+      }
+      const scale = maxSide / longestSide;
+      return {
+        width: Math.max(1, Math.round(width * scale)),
+        height: Math.max(1, Math.round(height * scale))
+      };
     }
     async function loadImageBitmap(file){
       if('createImageBitmap' in window){
@@ -30182,27 +30306,103 @@
         URL.revokeObjectURL(objectUrl);
       }
     }
+    function createCanvas(width, height){
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      return canvas;
+    }
+    function drawSourceToCanvas(source, width, height){
+      const canvas = createCanvas(width, height);
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(source, 0, 0, width, height);
+      return canvas;
+    }
+    function rotateCanvas(sourceCanvas, degrees){
+      const quarterTurn = Math.abs(degrees) % 180 === 90;
+      const canvas = createCanvas(
+        quarterTurn ? sourceCanvas.height : sourceCanvas.width,
+        quarterTurn ? sourceCanvas.width : sourceCanvas.height
+      );
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((degrees * Math.PI) / 180);
+      ctx.drawImage(sourceCanvas, -sourceCanvas.width / 2, -sourceCanvas.height / 2);
+      return canvas;
+    }
+    function cropCanvas(sourceCanvas, x, y, width, height){
+      const canvas = createCanvas(width, height);
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(sourceCanvas, x, y, width, height, 0, 0, width, height);
+      return canvas;
+    }
+    function boostContrast(sourceCanvas, contrast=1.45){
+      const canvas = createCanvas(sourceCanvas.width, sourceCanvas.height);
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(sourceCanvas, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+      const intercept = 128 * (1 - contrast);
+      for(let i = 0; i < data.length; i += 4){
+        const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+        const adjusted = Math.max(0, Math.min(255, gray * contrast + intercept));
+        data[i] = adjusted;
+        data[i + 1] = adjusted;
+        data[i + 2] = adjusted;
+      }
+      ctx.putImageData(imageData, 0, 0);
+      return canvas;
+    }
+    function buildDecodeCanvases(sourceCanvas){
+      const variants = [sourceCanvas, boostContrast(sourceCanvas)];
+      const marginX = Math.round(sourceCanvas.width * 0.08);
+      const marginY = Math.round(sourceCanvas.height * 0.08);
+      const cropWidth = sourceCanvas.width - marginX * 2;
+      const cropHeight = sourceCanvas.height - marginY * 2;
+
+      if(cropWidth > 120 && cropHeight > 120){
+        const cropped = cropCanvas(sourceCanvas, marginX, marginY, cropWidth, cropHeight);
+        variants.push(cropped, boostContrast(cropped, 1.6));
+      }
+
+      return variants.flatMap((canvas)=>[
+        canvas,
+        rotateCanvas(canvas, 90),
+        rotateCanvas(canvas, 180),
+        rotateCanvas(canvas, 270)
+      ]);
+    }
+    function decodeWithJsQrVariants(canvases){
+      for(const canvas of canvases){
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const decoded = jsQR(imageData.data, canvas.width, canvas.height, { inversionAttempts: 'attemptBoth' });
+        if(decoded && decoded.data){
+          return decoded.data;
+        }
+      }
+      return '';
+    }
     async function decodeQrFromFile(file){
       if(!file){
         throw new Error('請先選擇一張 QR Code 圖片。');
       }
 
       const bitmap = await loadImageBitmap(file);
-      const canvas = document.createElement('canvas');
-      const width = bitmap.width || bitmap.naturalWidth;
-      const height = bitmap.height || bitmap.naturalHeight;
-      canvas.width = width;
-      canvas.height = height;
-
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      ctx.drawImage(bitmap, 0, 0, width, height);
+      const rawWidth = bitmap.width || bitmap.naturalWidth;
+      const rawHeight = bitmap.height || bitmap.naturalHeight;
+      const fittedSize = getFittedSize(rawWidth, rawHeight);
+      const canvas = drawSourceToCanvas(bitmap, fittedSize.width, fittedSize.height);
 
       if('BarcodeDetector' in window){
         try {
           const detector = new BarcodeDetector({ formats: ['qr_code'] });
-          const codes = await detector.detect(canvas);
-          if(codes.length && codes[0].rawValue){
-            return codes[0].rawValue;
+          const canvases = buildDecodeCanvases(canvas);
+          for(const candidate of canvases){
+            const codes = await detector.detect(candidate);
+            if(codes.length && codes[0].rawValue){
+              return codes[0].rawValue;
+            }
           }
         } catch (_) {
           // Fallback to jsQR below.
@@ -30213,13 +30413,12 @@
         throw new Error('QR 解析器尚未載入，請稍後再試。');
       }
 
-      const imageData = ctx.getImageData(0, 0, width, height);
-      const decoded = jsQR(imageData.data, width, height, { inversionAttempts: 'attemptBoth' });
-      if(!decoded || !decoded.data){
-        throw new Error('無法辨識這張圖片中的 QR Code。');
+      const decodedValue = decodeWithJsQrVariants(buildDecodeCanvases(canvas));
+      if(!decodedValue){
+        throw new Error('無法辨識這張圖片中的 QR Code。請盡量靠近 QR 拍攝、避開反光，或先裁切只保留 QR 區域再上傳。');
       }
 
-      return decoded.data;
+      return decodedValue;
     }
 
     // ===== Data Flatten =====
@@ -30240,34 +30439,30 @@
       if(!val){ el.resultArea.innerHTML = '<div class="empty">請輸入舊網址</div>'; return; }
       const result = lookupExact(val);
       if(!result){
+        closeResultDialog();
         el.resultArea.innerHTML = '<div class="empty">找不到對應的新網址。</div>';
         return;
       }
       const categoryUrl = categoryLinks[result.category] || '#';
-      const card = document.createElement('div');
-      card.className = 'result-card fade';
-      card.innerHTML = `
-        <h1>${result.title}</h1>
-        <div style="margin-top:16px;display:grid;gap:.45rem;font-size:1rem;">
-          <span>分類：<a href="${categoryUrl}" target="_blank" rel="noopener">${result.category}</a></span>
-        </div>
-        <div style="margin-top:16px;display:grid;gap:.45rem;font-size:1rem;margin-bottom:8px;">
-          <div style="margin-bottom:8px;">新網址：<a href="${result.newUrl}" target="_blank" rel="noopener" class="mono">${result.newUrl}</a></div>
-          <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-            <button type="button" class="outline" onclick="window.open('${result.newUrl}','_blank')">開啟新頁</button>
-          </div>
-        </div>`;
-      el.resultArea.replaceChildren(card);
+      el.resultArea.innerHTML = '';
+      showResultDialog(result, categoryUrl);
     }
 
     // ===== Events =====
     el.findBtn.addEventListener('click', ()=> showResult(el.input.value));
     el.input.addEventListener('keydown', e=>{ if(e.key==='Enter'){ showResult(el.input.value); } });
+    el.closeResultDialog.addEventListener('click', closeResultDialog);
+    el.resultDialog.addEventListener('click', e=>{
+      if(e.target === el.resultDialog){
+        closeResultDialog();
+      }
+    });
     el.clearBtn.addEventListener('click', ()=>{
+      closeResultDialog();
       el.input.value='';
       el.qrUpload.value='';
       setQrStatus('');
-      el.resultArea.innerHTML='<div class="empty">已清空，請重新輸入</div>';
+      el.resultArea.innerHTML='';
     });
     el.qrUpload.addEventListener('change', async e=>{
       const file = e.target.files && e.target.files[0];
@@ -30276,15 +30471,15 @@
         return;
       }
 
-      setQrStatus('正在解析 QR Code...');
+      setQrStatus('正在解析 QR Code，請稍候不要離開...', false, true);
 
       try {
         const decodedValue = await decodeQrFromFile(file);
         const normalizedUrl = normalizeLookupInput(decodedValue);
-        el.input.value = normalizedUrl;
         setQrStatus(`已解析出舊網址：${truncate(normalizedUrl, 80)}`);
         showResult(normalizedUrl);
       } catch (error) {
+        closeResultDialog();
         setQrStatus(error.message || 'QR Code 解析失敗。', true);
         el.resultArea.innerHTML = '<div class="empty">圖片解析失敗，請確認 QR Code 內容是舊站網址。</div>';
       }
@@ -30301,7 +30496,7 @@
 
     // ===== Initialization =====
     buildData();
-    if(state.data.length){ el.resultArea.innerHTML = '<div class="empty">輸入舊網址後顯示結果</div>'; }
+    if(state.data.length){ el.resultArea.innerHTML = ''; }
     toast('資料載入完成');
   </script>
 </body>
