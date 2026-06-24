@@ -30276,7 +30276,8 @@
       const trimmed = String(value || '').trim();
       if(!trimmed) return '';
       const matchedUrl = trimmed.match(urlPattern);
-      return matchedUrl ? matchedUrl[0].trim() : trimmed;
+      const normalized = matchedUrl ? matchedUrl[0].trim() : trimmed;
+      return normalized.replace(/^http:\/\//i, 'https://');
     }
     function getFittedSize(width, height, maxSide=1800){
       const longestSide = Math.max(width, height);
