@@ -202,25 +202,23 @@
 <body>
   <header>
     <div>
-      <h1>理書的網站，舊站連結轉新站小工具</h1>
-      <div class="tagline">快速查找舊 Typepad 文章對應的新 WordPress 連結</div>
+      <h1>理書的網站，舊站連結轉新站</h1>
     </div>
   </header>
   <main class="layout fullscreen" id="appRoot">
     <section class="panel" aria-labelledby="lookupHeading">
-      <h2 id="lookupHeading" style="margin-top:0;font-size:1.2rem;display:flex;align-items:center;gap:.5rem;">✨ 新站網址查詢</h2>
+      <h2 id="lookupHeading" style="margin-top:0;font-size:1.2rem;display:flex;align-items:center;gap:.5rem;">✨ 用手機拍下 QR Code</h2>
       <form id="lookupForm" class="lookup-form" onsubmit="return false" autocomplete="off">
         <div class="primary-upload" aria-labelledby="qrPrimaryTitle">
-          <h3 class="lookup-title" id="qrPrimaryTitle">上傳 QR Code 圖片</h3>
-          <p class="lookup-copy">選一張含舊站網址的 QR Code 圖片，系統會自動解析並直接顯示新站網址。</p>
+          <!-- <h3 class="lookup-title" id="qrPrimaryTitle">上傳 QR Code 圖片</h3> -->
+          <p class="lookup-copy">手機鏡頭對準 QR Code，拍下來，或直接選相簿裡的照片，上傳後就會立即解析，帶出對應的新站連結。</p>
           <div class="upload-row">
             <input id="qrUpload" type="file" accept="image/*" aria-describedby="qrHelp qrStatus" />
           </div>
-          <p class="upload-help" id="qrHelp">支援手機截圖、相簿圖片或掃碼截圖。選取後會立即解析，不需要再按查詢。</p>
           <div class="upload-status" id="qrStatus" aria-live="polite"></div>
         </div>
 
-        <div class="manual-section" aria-labelledby="manualLookupTitle">
+        <!-- <div class="manual-section" aria-labelledby="manualLookupTitle">
           <div class="manual-header">
             <h3 class="manual-title" id="manualLookupTitle">沒有 QR 圖片時，再手動貼上舊站網址</h3>
           </div>
@@ -230,7 +228,7 @@
             <button class="outline" id="clearBtn" type="button" aria-label="清空輸入">清空</button>
           </div>
           <div class="manual-actions" id="urlHelp">貼上完整舊站網址後查詢；若 QR 已成功解析，這裡也會自動帶入內容。</div>
-        </div>
+        </div> -->
       </form>
       <div class="result-area" id="resultArea" aria-live="polite"></div>
       <div class="stats" id="statsBar"></div>
